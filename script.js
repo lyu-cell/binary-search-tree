@@ -59,10 +59,39 @@ class Tree {
     return root;
   }
 
+  insertRef(value, node) {
+    console.log(node)
+    if(value < node.data && node.left === null) node.left = {data: value, left: null, right: null}
+    else if(value > node.data && node.right === null) node.right = {data: value, left: null, right: null}
+    else {
+      
+      if(value < node.data) this.insertRef(value, node.left)
+        else if(value > node.data) this.insertRef(value, node.right)
+    }
+  }
+
+  insert(value) {
+    this.insertRef(value, this.root)  
+  }
+
 }
 
 
 
-let t = new Tree([0, 2, 44, 1, 44, 20, 5, 44, 39, 46, 7])
+let t = new Tree([0, 2, 44, 44, 20, 5, 44, 39, 46, 7, 31, 27])
 
-console.log(t)
+const prettyPrint = (node, prefix = "", isLeft = true) => {
+  if (node === null) {
+    return;
+  }
+  if (node.right !== null) {
+    prettyPrint(node.right, `${prefix}${isLeft ? "│   " : "    "}`, false);
+  }
+  console.log(`${prefix}${isLeft ? "└── " : "┌── "}${node.data}`);
+  if (node.left !== null) {
+    prettyPrint(node.left, `${prefix}${isLeft ? "    " : "│   "}`, true);
+  }
+};
+
+t.insert(10)
+console.log(prettyPrint(t.root))
