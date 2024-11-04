@@ -7,24 +7,23 @@ class Node {
 }
 
 class Tree {
-
   constructor(array) {
-    this.root = null
-    this.sortUniqueArray(array)
+    this.root = null;
+    this.sortUniqueArray(array);
   }
 
   sortUniqueArray(array) {
-    let set = new Set(this.orderedArray(array))
-    let value = []
-    set.forEach(v => value.push(v))
+    let set = new Set(this.orderedArray(array));
+    let value = [];
+    set.forEach((v) => value.push(v));
 
-    let treeRoot = this.buildTree(value, 0, value.length -1)
-    this.root = treeRoot
+    let treeRoot = this.buildTree(value, 0, value.length - 1);
+    this.root = { zeroRoot: treeRoot };
   }
 
   orderedArray(array) {
     let orderedArray = [];
-  
+
     if (array.length === 1) return array;
     else {
       let rightSide = array.splice(Math.round((array.length - 1) / 2));
@@ -32,18 +31,18 @@ class Tree {
       let left = this.orderedArray(array);
       let right = this.orderedArray(rightSide);
       let arraySize = left.length + right.length;
-  
+
       for (let i = 0; i < arraySize; i++) {
         if (left[0] < right[0] || right.length === 0)
           orderedArray.push(left.splice(0, 1)[0]);
         else if (right[0] < left[0] || left.length === 0)
           orderedArray.push(right.splice(0, 1)[0]);
         else if (right.length !== 0 && left[0] === right[0]) {
-          orderedArray.push(left.splice(0, 1)[0])
+          orderedArray.push(left.splice(0, 1)[0]);
         }
       }
     }
-  
+
     return orderedArray;
   }
 
@@ -60,25 +59,51 @@ class Tree {
   }
 
   insertRef(value, node) {
-    console.log(node)
-    if(value < node.data && node.left === null) node.left = {data: value, left: null, right: null}
-    else if(value > node.data && node.right === null) node.right = {data: value, left: null, right: null}
+    if (value < node.data && node.left === null)
+      node.left = { data: value, left: null, right: null };
+    else if (value > node.data && node.right === null)
+      node.right = { data: value, left: null, right: null };
     else {
-      
-      if(value < node.data) this.insertRef(value, node.left)
-        else if(value > node.data) this.insertRef(value, node.right)
+      if (value < node.data) this.insertRef(value, node.left);
+      else if (value > node.data) this.insertRef(value, node.right);
     }
   }
 
   insert(value) {
-    this.insertRef(value, this.root)  
+    this.insertRef(value, this.root.zeroRoot);
   }
 
+  delete(value) {
+    let resultNode = null;
+    function dfs(value, node) {
+      if (node === null) return;
+      else if (node.left !== undefined && node.data === value) return "m";
+      else if (node.left === undefined) {
+        if (dfs(value, node.zeroRoot) === "m") resultNode = node;
+      } else if (value < node.data) {
+        if (dfs(value, node.left) === "m") resultNode = node;
+      } else if (value > node.data) {
+        if (dfs(value, node.right) === "m") resultNode = node;
+      }
+    }
+  
+    dfs(value, t.root);
+  
+    if (resultNode.left === undefined) {
+      if (resultNode.zeroRoot.left === null && resultNode.zeroRoot.right === null)
+        resultNode.zeroRoot = null;
+    } else if (resultNode.left !== null && resultNode.left.data === value) {
+      if (resultNode.left.left === null && resultNode.left.right === null)
+        resultNode.left = null;
+    } else if (resultNode.right !== null && resultNode.right.data === value) {
+      if (resultNode.right.left === null && resultNode.right.right === null)
+        resultNode.right = null;
+    }
+  }
+  
 }
 
-
-
-let t = new Tree([0, 2, 44, 44, 20, 5, 44, 39, 46, 7, 31, 27])
+let t = new Tree([0, 2, 44, 44, 20, 5, 44, 39, 46, 7, 31, 27]);
 
 const prettyPrint = (node, prefix = "", isLeft = true) => {
   if (node === null) {
@@ -93,5 +118,4 @@ const prettyPrint = (node, prefix = "", isLeft = true) => {
   }
 };
 
-t.insert(10)
-console.log(prettyPrint(t.root))
+
