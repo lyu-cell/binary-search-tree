@@ -86,21 +86,51 @@ class Tree {
         if (dfs(value, node.right) === "m") resultNode = node;
       }
     }
-  
+
     dfs(value, t.root);
-  
+
     if (resultNode.left === undefined) {
-      if (resultNode.zeroRoot.left === null && resultNode.zeroRoot.right === null)
+      if (
+        resultNode.zeroRoot.left === null &&
+        resultNode.zeroRoot.right === null
+      )
         resultNode.zeroRoot = null;
+      else if (
+        resultNode.zeroRoot.left !== null &&
+        resultNode.zeroRoot.right === null
+      )
+        resultNode.zeroRoot = resultNode.zeroRoot.left;
+      else resultNode.zeroRoot = resultNode.zeroRoot.right;
     } else if (resultNode.left !== null && resultNode.left.data === value) {
       if (resultNode.left.left === null && resultNode.left.right === null)
         resultNode.left = null;
+      else if (
+        resultNode.left.left !== null &&
+        resultNode.left.right === null
+      ) {
+        resultNode.left = resultNode.left.left;
+      } else if (
+        resultNode.left.right !== null &&
+        resultNode.left.left === null
+      ) {
+        resultNode.left = resultNode.left.right;
+      }
     } else if (resultNode.right !== null && resultNode.right.data === value) {
       if (resultNode.right.left === null && resultNode.right.right === null)
         resultNode.right = null;
+      else if (
+        resultNode.right.right !== null &&
+        resultNode.right.left === null
+      ) {
+        resultNode.right = resultNode.right.right;
+      } else if (
+        resultNode.right.left !== null &&
+        resultNode.right.right === null
+      ) {
+        resultNode.right = resultNode.right.left;
+      }
     }
   }
-  
 }
 
 let t = new Tree([0, 2, 44, 44, 20, 5, 44, 39, 46, 7, 31, 27]);
@@ -118,4 +148,10 @@ const prettyPrint = (node, prefix = "", isLeft = true) => {
   }
 };
 
+prettyPrint(t.root.zeroRoot);
 
+t.delete(20);
+
+console.log("After");
+
+prettyPrint(t.root.zeroRoot);
