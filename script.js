@@ -73,6 +73,47 @@ class Tree {
     this.insertRef(value, this.root.zeroRoot);
   }
 
+  subtreeHeight(node) {
+    let firstScore = 0;
+    let secondScore = 0;
+  
+    if (node.right === null && node.left === null) return 1;
+    else {
+      if (node.right !== null && node.left !== null) {
+        firstScore = this.subtreeHeight(node.right);
+        secondScore = this.subtreeHeight(node.left);
+      } else if (node.right !== null && node.left === null)
+        firstScore = this.subtreeHeight(node.right);
+      else secondScore = this.subtreeHeight(node.left);
+    }
+  
+    if(firstScore > secondScore) {
+      firstScore++
+      return firstScore
+    }
+    else if(secondScore > firstScore) {
+      secondScore++
+      return secondScore
+    }
+    else {
+      firstScore++
+      return firstScore
+    }
+  }
+    
+
+  getReplaceable (side, node) {
+    if(side === "right" && node.right !== null && node.right.right === null && node.right.left === null) return node
+    else if(side === "left" && node.left !== null && node.left.right === null && node.left.left === null) return node
+    else {
+      if(side === "right") {
+        return getReplaceable(side, node.right)
+      } else {
+        return getReplaceable(side, node.left)
+      }
+    }
+  }  
+
   delete(value) {
     let resultNode = null;
     function dfs(value, node) {
@@ -100,8 +141,17 @@ class Tree {
         resultNode.zeroRoot.right === null
       )
         resultNode.zeroRoot = resultNode.zeroRoot.left;
-      else resultNode.zeroRoot = resultNode.zeroRoot.right;
-    } else if (resultNode.left !== null && resultNode.left.data === value) {
+      
+        else if(resultNode.zeroRoot.right !== null && 
+              resultNode.zeroRoot.left === null)
+        
+              resultNode.zeroRoot = resultNode.zeroRoot.right;
+              else {
+
+              }
+    } 
+    
+    else if (resultNode.left !== null && resultNode.left.data === value) {
       if (resultNode.left.left === null && resultNode.left.right === null)
         resultNode.left = null;
       else if (
@@ -115,7 +165,10 @@ class Tree {
       ) {
         resultNode.left = resultNode.left.right;
       }
-    } else if (resultNode.right !== null && resultNode.right.data === value) {
+    } 
+    
+    else if (resultNode.right !== null && resultNode.right.data === value) {
+      
       if (resultNode.right.left === null && resultNode.right.right === null)
         resultNode.right = null;
       else if (
@@ -148,10 +201,16 @@ const prettyPrint = (node, prefix = "", isLeft = true) => {
   }
 };
 
+console.log(
+  "                                                                     "
+);
+
+
+
+t.insert(-1)
+
+
 prettyPrint(t.root.zeroRoot);
 
-t.delete(20);
 
-console.log("After");
-
-prettyPrint(t.root.zeroRoot);
+console.log(t.subtreeHeight(t.root.zeroRoot.right))
