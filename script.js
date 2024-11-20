@@ -103,6 +103,26 @@ class Tree {
     
 
 
+
+
+  getReplaceable (side, node) {
+    if(side === "right" && node.right !== null && 
+      node.right.right === null)
+       return node
+    else if(side === "left" && node.left !== null 
+            && node.left.left === null) 
+      return node
+    else {
+      if(side === "right") {
+        return this.getReplaceable(side, node.right)
+      } else {
+        return this.getReplaceable(side, node.left)
+      }
+    }
+  }  
+
+
+
   delete (value) {
     let resultNode = null;
     function dfs(value, node) {
@@ -120,24 +140,36 @@ class Tree {
     dfs(value, t.root);
 
     if (resultNode.left === undefined) {
-      if (
-        resultNode.zeroRoot.left === null &&
-        resultNode.zeroRoot.right === null
-      )
+      if (resultNode.zeroRoot.left === null && resultNode.zeroRoot.right === null) {
         resultNode.zeroRoot = null;
-      else if (
-        resultNode.zeroRoot.left !== null &&
-        resultNode.zeroRoot.right === null
-      )
-        resultNode.zeroRoot = resultNode.zeroRoot.left;
       
-        else if(resultNode.zeroRoot.right !== null && 
-              resultNode.zeroRoot.left === null)
-        
-              resultNode.zeroRoot = resultNode.zeroRoot.right;
-              else {
+      } else if (resultNode.zeroRoot.left !== null && resultNode.zeroRoot.right === null) {
+        resultNode.zeroRoot = resultNode.zeroRoot.left;
 
-              }
+      } else if (resultNode.zeroRoot.right !== null && resultNode.zeroRoot.left === null) {
+        resultNode.zeroRoot = resultNode.zeroRoot.right;
+      } else {
+        let rightChildHeight = this.subtreeHeight(this.root.zeroRoot.right)
+        let leftChildHeight = this.subtreeHeight(this.root.zeroRoot.left)
+        let replacementNode = null
+        let children = "left"
+
+        if(rightChildHeight > leftChildHeight) {
+          replacementNode = this.getReplaceable("left", this.root.zeroRoot.right)
+          children = "right"
+        } else if(leftChildHeight > rightChildHeight) {
+          replacementNode = this.getReplaceable("right", this.root.zeroRoot.left)
+        } else replacementNode = this.getReplaceable("left", this.root.zeroRoot.right)
+        console.log("h", resultNode.zeroRoot.right)
+
+        let copiedRep = replacementNode[children]
+        replacementNode[children] = null
+        copiedRep.right = resultNode.zeroRoot.right
+        copiedRep.left = resultNode.zeroRoot.left
+
+        resultNode.zeroRoot = copiedRep
+      }
+        
     } 
     
     else if (resultNode.left !== null && resultNode.left.data === value) {
@@ -191,21 +223,8 @@ const prettyPrint = (node, prefix = "", isLeft = true) => {
 };
 
 
+prettyPrint(t.root.zeroRoot)
 
+t.delete(27)
 
-function getReplaceable (side, node) {
-  if(side === "right" && node.right !== null && 
-    node.right.right === null)
-     return node
-  else if(side === "left" && node.left !== null 
-          && node.left.left === null) 
-    return node
-  else {
-    if(side === "right") {
-      return getReplaceable(side, node.right)
-    } else {
-      return getReplaceable(side, node.left)
-    }
-  }
-}  
-
+prettyPrint(t.root.zeroRoot)
