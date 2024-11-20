@@ -102,19 +102,8 @@ class Tree {
   }
     
 
-  getReplaceable (side, node) {
-    if(side === "right" && node.right !== null && node.right.right === null && node.right.left === null) return node
-    else if(side === "left" && node.left !== null && node.left.right === null && node.left.left === null) return node
-    else {
-      if(side === "right") {
-        return getReplaceable(side, node.right)
-      } else {
-        return getReplaceable(side, node.left)
-      }
-    }
-  }  
 
-  delete(value) {
+  delete (value) {
     let resultNode = null;
     function dfs(value, node) {
       if (node === null) return;
@@ -201,16 +190,22 @@ const prettyPrint = (node, prefix = "", isLeft = true) => {
   }
 };
 
-console.log(
-  "                                                                     "
-);
 
 
 
-t.insert(-1)
+function getReplaceable (side, node) {
+  if(side === "right" && node.right !== null && 
+    node.right.right === null)
+     return node
+  else if(side === "left" && node.left !== null 
+          && node.left.left === null) 
+    return node
+  else {
+    if(side === "right") {
+      return getReplaceable(side, node.right)
+    } else {
+      return getReplaceable(side, node.left)
+    }
+  }
+}  
 
-
-prettyPrint(t.root.zeroRoot);
-
-
-console.log(t.subtreeHeight(t.root.zeroRoot.right))
