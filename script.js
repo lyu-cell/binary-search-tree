@@ -102,109 +102,6 @@ class Tree {
   }
     
 
-
-
-
-  getReplaceable (side, node) {
-    if(side === "right" && node.right !== null && 
-      node.right.right === null)
-       return node
-    else if(side === "left" && node.left !== null 
-            && node.left.left === null) 
-      return node
-    else {
-      if(side === "right") {
-        return this.getReplaceable(side, node.right)
-      } else {
-        return this.getReplaceable(side, node.left)
-      }
-    }
-  }  
-
-
-
-  delete (value) {
-    let resultNode = null;
-    function dfs(value, node) {
-      if (node === null) return;
-      else if (node.left !== undefined && node.data === value) return "m";
-      else if (node.left === undefined) {
-        if (dfs(value, node.zeroRoot) === "m") resultNode = node;
-      } else if (value < node.data) {
-        if (dfs(value, node.left) === "m") resultNode = node;
-      } else if (value > node.data) {
-        if (dfs(value, node.right) === "m") resultNode = node;
-      }
-    }
-
-    dfs(value, t.root);
-
-    if (resultNode.left === undefined) {
-      if (resultNode.zeroRoot.left === null && resultNode.zeroRoot.right === null) {
-        resultNode.zeroRoot = null;
-      
-      } else if (resultNode.zeroRoot.left !== null && resultNode.zeroRoot.right === null) {
-        resultNode.zeroRoot = resultNode.zeroRoot.left;
-
-      } else if (resultNode.zeroRoot.right !== null && resultNode.zeroRoot.left === null) {
-        resultNode.zeroRoot = resultNode.zeroRoot.right;
-      } else {
-        let rightChildHeight = this.subtreeHeight(this.root.zeroRoot.right)
-        let leftChildHeight = this.subtreeHeight(this.root.zeroRoot.left)
-        let replacementNode = null
-        let children = "left"
-
-        if(rightChildHeight > leftChildHeight) {
-          replacementNode = this.getReplaceable("left", this.root.zeroRoot.right)
-          children = "right"
-        } else if(leftChildHeight > rightChildHeight) {
-          replacementNode = this.getReplaceable("right", this.root.zeroRoot.left)
-        } else replacementNode = this.getReplaceable("left", this.root.zeroRoot.right)
-        console.log("h", resultNode.zeroRoot.right)
-
-        let copiedRep = replacementNode[children]
-        replacementNode[children] = null
-        copiedRep.right = resultNode.zeroRoot.right
-        copiedRep.left = resultNode.zeroRoot.left
-
-        resultNode.zeroRoot = copiedRep
-      }
-        
-    } 
-    
-    else if (resultNode.left !== null && resultNode.left.data === value) {
-      if (resultNode.left.left === null && resultNode.left.right === null)
-        resultNode.left = null;
-      else if (
-        resultNode.left.left !== null &&
-        resultNode.left.right === null
-      ) {
-        resultNode.left = resultNode.left.left;
-      } else if (
-        resultNode.left.right !== null &&
-        resultNode.left.left === null
-      ) {
-        resultNode.left = resultNode.left.right;
-      }
-    } 
-    
-    else if (resultNode.right !== null && resultNode.right.data === value) {
-      
-      if (resultNode.right.left === null && resultNode.right.right === null)
-        resultNode.right = null;
-      else if (
-        resultNode.right.right !== null &&
-        resultNode.right.left === null
-      ) {
-        resultNode.right = resultNode.right.right;
-      } else if (
-        resultNode.right.left !== null &&
-        resultNode.right.right === null
-      ) {
-        resultNode.right = resultNode.right.left;
-      }
-    }
-  }
 }
 
 let t = new Tree([0, 2, 44, 44, 20, 5, 44, 39, 46, 7, 31, 27]);
@@ -225,6 +122,76 @@ const prettyPrint = (node, prefix = "", isLeft = true) => {
 
 prettyPrint(t.root.zeroRoot)
 
-t.delete(27)
+function variableCheck(variable, node) {
+    if(variable === "m") return node
+    else return variable
+}
 
-prettyPrint(t.root.zeroRoot)
+
+
+
+
+
+
+
+function parentOfNode(value, node) {
+  let rightValue = null;
+  let leftValue = null;
+
+  if(node === null) return
+  else if(node.left === undefined && node.zeroRoot.data === value) return node
+  else if(node.left !== undefined && node.data === value) return "m"
+  else {
+    if(node.left === undefined) {
+      if(value > node.zeroRoot.data) {
+        rightValue = parentOfNode(value, node.zeroRoot.right)
+      } else leftValue = parentOfNode(value, node.zeroRoot.left)
+    
+    } else {
+      if(value > node.data) {
+        rightValue = parentOfNode(value, node.right)
+      } else leftValue = parentOfNode(value, node.left)
+    }
+  }
+
+  if(rightValue === "m" || leftValue === "m") {
+    if(node.left !== undefined) return node
+    else return node.zeroRoot
+  }
+  else if(rightValue !== undefined && rightValue !== null) return rightValue
+  else if(leftValue !== undefined && leftValue !== null) return leftValue
+
+}
+
+
+
+function provideNodeInfo(value) {
+  let parentNode = parentOfNode(value, t.root)
+  let info = {nodeAt: null, parentNode: parentNode, leftHeight: null, rightHeight: null}
+
+  if(parentNode.left === undefined) info.nodeAt = "zeroRoot"
+  else {
+    if(parentNode.left !== null && parentNode.left.data === value) info.nodeAt = "left"
+    else info.nodeAt = "right"
+  }
+
+  let right = parentNode[info.nodeAt].right
+  let left = parentNode[info.nodeAt].left
+
+  if(right === null && left !== null) {
+    info.leftHeight = t.subtreeHeight(left)
+  } else if(left === null && right !== null) {
+    info.rightHeight = t.subtreeHeight(right)
+  } else {
+    if(right !== null && left !== null) {
+      info.rightHeight = t.subtreeHeight(right)
+      info.leftHeight = t.subtreeHeight(left)
+    }
+  }
+
+  return info
+  
+}
+
+
+console.log(provideNodeInfo(44))
