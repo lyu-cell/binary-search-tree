@@ -194,4 +194,112 @@ function provideNodeInfo(value) {
 }
 
 
-console.log(provideNodeInfo(44))
+
+
+
+
+
+
+function deleteNode(value) {
+
+  let info = provideNodeInfo(value)
+  let node = info.parentNode[info.nodeAt] 
+  
+
+  if(info.leftHeight === null && info.rightHeight === null) {
+    info.parentNode[info.nodeAt] = null
+  } else if(info.leftHeight !== null || info.rightHeight !== null) {
+    if(node.left !== null && node.right === null) {
+      let grandN = node.left
+      info.parentNode[info.nodeAt] = grandN
+    } else if(node.right !== null && node.left === null){
+      let grandN = node.right
+      info.parentNode[info.nodeAt] = grandN
+    }
+  
+  } 
+
+}
+
+t.insert(3)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+prettyPrint(t.root.zeroRoot)
+
+
+
+
+
+function farthest(direction, node) {
+  if(node[direction] === null) return node
+  else {
+    return farthest(direction, node[direction])
+  }
+}
+
+
+
+function removeMid(value) {
+  let info = provideNodeInfo(value)
+  let node = info.parentNode[info.nodeAt]
+  let r = null
+
+  if(info.rightHeight !== null) {
+    r = farthest("left", info.parentNode[info.nodeAt].right)
+  } 
+  
+  
+  let lastNodeInfo = provideNodeInfo(r.data)
+  let lastNode = lastNodeInfo.parentNode[lastNodeInfo.nodeAt]
+  
+  console.log(lastNodeInfo)
+  if(lastNode.left === null && lastNode.right === null) {
+    lastNodeInfo.parentNode[lastNodeInfo.nodeAt] = null
+    lastNode.right = node.right
+    lastNode.left = node.left
+    info.parentNode[info.nodeAt] = lastNode
+    lastNodeInfo.parentNode[lastNodeInfo.nodeAt] = null
+      
+  } 
+}
+
+
+
+
+
+
+console.log("After ............................................................................................................................................................................")
+
+
+
+prettyPrint(t.root.zeroRoot)
+
+
