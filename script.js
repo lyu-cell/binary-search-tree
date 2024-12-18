@@ -186,7 +186,14 @@ class Tree {
     }
   }
 
-
+  find(value) {
+    let result = this.parentOfNode(value, this.root)
+    
+    if(result.right === undefined) return result.zeroRoot
+    else if(result.right !== null && result.right.data === value) return result.right
+    else return result.left
+  }
+  
 }
 
 let t = new Tree([0, 2, 44, 44, 20, 5, 44, 39, 46, 7, 31, 27]);
@@ -205,4 +212,5 @@ const prettyPrint = (node, prefix = "", isLeft = true) => {
   }
 };
 
-prettyPrint(t.root.zeroRoot);
+
+prettyPrint(t.root.zeroRoot)
