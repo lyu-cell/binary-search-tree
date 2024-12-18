@@ -76,7 +76,7 @@ class Tree {
   subtreeHeight(node) {
     let firstScore = 0;
     let secondScore = 0;
-  
+
     if (node.right === null && node.left === null) return 1;
     else {
       if (node.right !== null && node.left !== null) {
@@ -86,25 +86,111 @@ class Tree {
         firstScore = this.subtreeHeight(node.right);
       else secondScore = this.subtreeHeight(node.left);
     }
-  
-    if(firstScore > secondScore) {
-      firstScore++
-      return firstScore
-    }
-    else if(secondScore > firstScore) {
-      secondScore++
-      return secondScore
-    }
-    else {
-      firstScore++
-      return firstScore
+
+    if (firstScore > secondScore) {
+      firstScore++;
+      return firstScore;
+    } else if (secondScore > firstScore) {
+      secondScore++;
+      return secondScore;
+    } else {
+      firstScore++;
+      return firstScore;
     }
   }
-    
+
+
+  parentOfNode(value, node) {
+    let rightValue = null;
+    let leftValue = null;
+
+    if (node === null) return;
+    else if (node.left === undefined && node.zeroRoot.data === value) return node;
+    else if (node.left !== undefined && node.data === value) return "m";
+    else {
+      if (node.left === undefined) {
+        if (value > node.zeroRoot.data) {
+          rightValue = this.parentOfNode(value, node.zeroRoot.right);
+        } else leftValue = this.parentOfNode(value, node.zeroRoot.left);
+      } else {
+        if (value > node.data) {
+          rightValue = this.parentOfNode(value, node.right);
+        } else leftValue = this.parentOfNode(value, node.left);
+      }
+    }
+
+    if (rightValue === "m" || leftValue === "m") {
+      if (node.left !== undefined) return node;
+      else return node.zeroRoot;
+    } else if (rightValue !== undefined && rightValue !== null) return rightValue;
+    else if (leftValue !== undefined && leftValue !== null) return leftValue;
+  }
+
+  info(value) {
+    let nodeParent = this.parentOfNode(value, this.root);
+    let removableNodeInfo = { parent: nodeParent, side: null };
+  
+    if (nodeParent.left === undefined) removableNodeInfo.side = "zeroRoot";
+    else if (nodeParent.left !== null && nodeParent.left.data === value) {
+      removableNodeInfo.side = "left";
+    } else removableNodeInfo.side = "right";
+  
+    return removableNodeInfo;
+  }
+  
+
+  farthest(direction, node) {
+    if (node[direction] === null) return node;
+    else {
+      return this.farthest(direction, node[direction]);
+    }
+  }
+
+
+  deleteNode(value) {
+    let remInfo = this.info(value);
+    let remNode = remInfo.parent[remInfo.side];
+
+    if (remNode.left !== null && remNode.right !== null) {
+      let repInfo = this.info(this.farthest("left", remNode.right).data);
+      let repNode = repInfo.parent[repInfo.side];
+
+      if (repNode.right === null) {
+        let repStore = repNode;
+        repInfo.parent[repInfo.side] = null;
+
+        repStore.right = remNode.right;
+        repStore.left = remNode.left;
+
+        remInfo.parent[remInfo.side] = repStore;
+      } else if (repNode.right !== null) {
+        let repStore = repNode;
+        repInfo.parent[repInfo.side] = repNode.right;
+        repStore.right = null;
+
+        repStore.right = remNode.right;
+        repStore.left = remNode.left;
+        remInfo.parent[remInfo.side] = repStore;
+      }
+    } else if(remNode.left !== null && remNode.right === null || 
+      remNode.right !== null && remNode.left === null) {
+      if(remNode.left === null && remNode.right !== null) {
+        let repStore = remNode.right
+        remInfo.parent[remInfo.side] = repStore
+      } else if(remNode.right === null && remNode.left !== null) {
+        let repStore = remNode.left
+        remInfo.parent[remInfo.side] = repStore
+      }
+    } else if(remNode.left === null && remNode.right === null) {
+      remInfo.parent[remInfo.side] = null
+    }
+  }
+
 
 }
 
 let t = new Tree([0, 2, 44, 44, 20, 5, 44, 39, 46, 7, 31, 27]);
+ 
 
 const prettyPrint = (node, prefix = "", isLeft = true) => {
   if (node === null) {
@@ -119,187 +205,4 @@ const prettyPrint = (node, prefix = "", isLeft = true) => {
   }
 };
 
-
-prettyPrint(t.root.zeroRoot)
-
-function variableCheck(variable, node) {
-    if(variable === "m") return node
-    else return variable
-}
-
-
-
-
-
-
-
-
-function parentOfNode(value, node) {
-  let rightValue = null;
-  let leftValue = null;
-
-  if(node === null) return
-  else if(node.left === undefined && node.zeroRoot.data === value) return node
-  else if(node.left !== undefined && node.data === value) return "m"
-  else {
-    if(node.left === undefined) {
-      if(value > node.zeroRoot.data) {
-        rightValue = parentOfNode(value, node.zeroRoot.right)
-      } else leftValue = parentOfNode(value, node.zeroRoot.left)
-    
-    } else {
-      if(value > node.data) {
-        rightValue = parentOfNode(value, node.right)
-      } else leftValue = parentOfNode(value, node.left)
-    }
-  }
-
-  if(rightValue === "m" || leftValue === "m") {
-    if(node.left !== undefined) return node
-    else return node.zeroRoot
-  }
-  else if(rightValue !== undefined && rightValue !== null) return rightValue
-  else if(leftValue !== undefined && leftValue !== null) return leftValue
-
-}
-
-
-
-function provideNodeInfo(value) {
-  let parentNode = parentOfNode(value, t.root)
-  let info = {nodeAt: null, parentNode: parentNode, leftHeight: null, rightHeight: null}
-
-  if(parentNode.left === undefined) info.nodeAt = "zeroRoot"
-  else {
-    if(parentNode.left !== null && parentNode.left.data === value) info.nodeAt = "left"
-    else info.nodeAt = "right"
-  }
-
-  let right = parentNode[info.nodeAt].right
-  let left = parentNode[info.nodeAt].left
-
-  if(right === null && left !== null) {
-    info.leftHeight = t.subtreeHeight(left)
-  } else if(left === null && right !== null) {
-    info.rightHeight = t.subtreeHeight(right)
-  } else {
-    if(right !== null && left !== null) {
-      info.rightHeight = t.subtreeHeight(right)
-      info.leftHeight = t.subtreeHeight(left)
-    }
-  }
-
-  return info
-  
-}
-
-
-
-
-
-
-
-
-function deleteNode(value) {
-
-  let info = provideNodeInfo(value)
-  let node = info.parentNode[info.nodeAt] 
-  
-
-  if(info.leftHeight === null && info.rightHeight === null) {
-    info.parentNode[info.nodeAt] = null
-  } else if(info.leftHeight !== null || info.rightHeight !== null) {
-    if(node.left !== null && node.right === null) {
-      let grandN = node.left
-      info.parentNode[info.nodeAt] = grandN
-    } else if(node.right !== null && node.left === null){
-      let grandN = node.right
-      info.parentNode[info.nodeAt] = grandN
-    }
-  
-  } 
-
-}
-
-t.insert(3)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-prettyPrint(t.root.zeroRoot)
-
-
-
-
-
-function farthest(direction, node) {
-  if(node[direction] === null) return node
-  else {
-    return farthest(direction, node[direction])
-  }
-}
-
-
-
-function removeMid(value) {
-  let info = provideNodeInfo(value)
-  let node = info.parentNode[info.nodeAt]
-  let r = null
-
-  if(info.rightHeight !== null) {
-    r = farthest("left", info.parentNode[info.nodeAt].right)
-  } 
-  
-  
-  let lastNodeInfo = provideNodeInfo(r.data)
-  let lastNode = lastNodeInfo.parentNode[lastNodeInfo.nodeAt]
-  
-  console.log(lastNodeInfo)
-  if(lastNode.left === null && lastNode.right === null) {
-    lastNodeInfo.parentNode[lastNodeInfo.nodeAt] = null
-    lastNode.right = node.right
-    lastNode.left = node.left
-    info.parentNode[info.nodeAt] = lastNode
-    lastNodeInfo.parentNode[lastNodeInfo.nodeAt] = null
-      
-  } 
-}
-
-
-
-
-
-
-console.log("After ............................................................................................................................................................................")
-
-
-
-prettyPrint(t.root.zeroRoot)
-
-
+prettyPrint(t.root.zeroRoot);
