@@ -194,7 +194,7 @@ class Tree {
   }
 
 
-  levelOrder(callback) {
+  levelOrderTraversal(callback) {
     let queue = [t.root.zeroRoot]
     
     function innerLevelOrder(callback) {
@@ -213,6 +213,49 @@ class Tree {
 
     innerLevelOrder(callback)
   }
+
+  preOrderTraversal(callback) {
+
+    function preOrder(node) {
+      if(node === null) return
+      else {
+        callback(node)
+        preOrder(node.left)
+        preOrder(node.right)
+      }
+    }
+  
+    preOrder(this.root.zeroRoot)
+  }
+  
+  inOrderTraversal(callback) {
+
+    function inOrder(node) {
+      if(node === null) return
+      else {
+        inOrder(node.left)
+        callback(node)
+        inOrder(node.right)
+      }
+    }
+  
+    inOrder(t.root.zeroRoot)
+  }
+
+  postOrderTraversal(callback) {
+
+    function postOrder(node) {
+      if(node === null) return
+      else {
+        postOrder(node.left)
+        postOrder(node.right)
+        callback(node)
+      }
+    }
+  
+    postOrder(t.root.zeroRoot)
+  }
+  
   
 
   
@@ -238,13 +281,3 @@ const prettyPrint = (node, prefix = "", isLeft = true) => {
 prettyPrint(t.root.zeroRoot)
 
 
-
-
-function heaven(node) {
-  console.log(node.data)
-}
-
-
-
-
-t.levelOrder(heaven)
