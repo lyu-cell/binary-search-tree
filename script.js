@@ -145,8 +145,7 @@ class Tree {
       return this.farthest(direction, node[direction]);
     }
   }
-
-
+  
   deleteNode(value) {
     let remInfo = this.info(value);
     let remNode = remInfo.parent[remInfo.side];
@@ -193,6 +192,29 @@ class Tree {
     else if(result.right !== null && result.right.data === value) return result.right
     else return result.left
   }
+
+
+  levelOrder(callback) {
+    let queue = [t.root.zeroRoot]
+    
+    function innerLevelOrder(callback) {
+      if(queue.length === 0) return
+      if(callback === null || callback === undefined) throw(console.error("provide a valid callback"));
+      else {
+        callback(queue[0])
+  
+        if(queue[0].left !== null) queue.push(queue[0].left)
+        if(queue[0].right !== null) queue.push(queue[0].right)
+  
+        queue.shift()
+        innerLevelOrder(callback)
+      }
+    }
+
+    innerLevelOrder(callback)
+  }
+  
+
   
 }
 
@@ -214,3 +236,15 @@ const prettyPrint = (node, prefix = "", isLeft = true) => {
 
 
 prettyPrint(t.root.zeroRoot)
+
+
+
+
+function heaven(node) {
+  console.log(node.data)
+}
+
+
+
+
+t.levelOrder(heaven)
