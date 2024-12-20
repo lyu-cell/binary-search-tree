@@ -256,10 +256,15 @@ class Tree {
     postOrder(t.root.zeroRoot)
   }
   
+  height(node) {
+    return this.subtreeHeight(node)
+  }
   
 
   
 }
+
+
 
 let t = new Tree([0, 2, 44, 44, 20, 5, 44, 39, 46, 7, 31, 27]);
  
@@ -274,10 +279,23 @@ const prettyPrint = (node, prefix = "", isLeft = true) => {
   console.log(`${prefix}${isLeft ? "└── " : "┌── "}${node.data}`);
   if (node.left !== null) {
     prettyPrint(node.left, `${prefix}${isLeft ? "    " : "│   "}`, true);
-  }
+  } 
 };
 
 
 prettyPrint(t.root.zeroRoot)
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
