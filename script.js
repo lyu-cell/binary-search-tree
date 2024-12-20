@@ -259,8 +259,21 @@ class Tree {
   height(node) {
     return this.subtreeHeight(node)
   }
-  
 
+  depth(node) {
+    let counter = 0
+  
+    function nodeFinder(node, tree) {
+      counter++
+      if(node.data === tree.data) return
+      else if(node.data < tree.data) nodeFinder(node, tree.left)
+      else  nodeFinder(node, tree.right)
+    }
+  
+    nodeFinder(node, this.root.zeroRoot)
+  
+    return counter
+  }
   
 }
 
@@ -281,6 +294,9 @@ const prettyPrint = (node, prefix = "", isLeft = true) => {
     prettyPrint(node.left, `${prefix}${isLeft ? "    " : "│   "}`, true);
   } 
 };
+
+
+
 
 
 prettyPrint(t.root.zeroRoot)
