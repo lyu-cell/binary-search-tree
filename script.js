@@ -76,8 +76,9 @@ class Tree {
   subtreeHeight(node) {
     let firstScore = 0;
     let secondScore = 0;
-
-    if (node.right === null && node.left === null) return 1;
+    
+    if(node === null) return 0;
+    else if (node.right === null && node.left === null) return 1;
     else {
       if (node.right !== null && node.left !== null) {
         firstScore = this.subtreeHeight(node.right);
@@ -274,6 +275,59 @@ class Tree {
   
     return counter
   }
+
+
+
+
+  isBalanced() {
+    let queue = [this.root.zeroRoot]
+
+    function innerLevelOrder() {
+
+      if(queue.length === 0) return "balanced"
+      else if((Math.abs(Math.abs(t.subtreeHeight(queue[0].right)) - Math.abs(t.subtreeHeight(queue[0].left)))) > 1) return "unbalanced"
+      else {
+        if(queue[0].left !== null) queue.push(queue[0].left)
+        if(queue[0].right !== null) queue.push(queue[0].right)
+
+        queue.shift()
+        return innerLevelOrder()
+      }
+    }
+
+    console.log(innerLevelOrder())
+  }
+
+  dataCollect() {
+    let queue = [t.root.zeroRoot]
+    let newArray = []
+  
+    function traversal() {
+   
+      if(queue.length === 0) return 
+      else {
+        
+        newArray.push(queue[0].data)
+  
+        if(queue[0].left !== null) queue.push(queue[0].left)
+        if(queue[0].right !== null) queue.push(queue[0].right)
+        
+        queue.shift()
+        traversal()
+      }
+    }
+  
+    traversal()
+    return newArray
+  }
+
+
+
+  reBalance() {
+    t = new Tree(this.dataCollect())
+  }
+
+  
   
 }
 
@@ -282,7 +336,7 @@ class Tree {
 let t = new Tree([0, 2, 44, 44, 20, 5, 44, 39, 46, 7, 31, 27]);
  
 
-const prettyPrint = (node, prefix = "", isLeft = true) => {
+  const prettyPrint = (node, prefix = "", isLeft = true) => {
   if (node === null) {
     return;
   }
@@ -297,21 +351,6 @@ const prettyPrint = (node, prefix = "", isLeft = true) => {
 
 
 
-
-
 prettyPrint(t.root.zeroRoot)
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
